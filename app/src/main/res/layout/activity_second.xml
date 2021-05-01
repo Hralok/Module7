@@ -13,7 +13,6 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
         app:srcCompat="@drawable/rkccehynkiy" />
 
     <ScrollView
@@ -30,13 +29,19 @@
             android:orientation="vertical" />
     </ScrollView>
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="409dp"
-        android:layout_height="62dp"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="5dp" />
+    <Button
+        android:onClick="toMenu"
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Меню"
+        app:layout_constraintBottom_toTopOf="@+id/imageButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.15" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
