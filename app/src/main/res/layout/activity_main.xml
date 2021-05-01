@@ -6,15 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <View
+        android:id="@+id/view2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.525" />
+        android:background="#121212"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="289dp"
+        android:layout_height="26dp"
+        android:text="Выберите источник изображения:"
+        android:textColor="#E2B4B4"
+        android:textColorHint="#FFFFFF"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="79dp"
+        tools:layout_editor_absoluteY="221dp" />
+
+    <Button
+        android:id="@+id/gal_butt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Галерея"
+        tools:layout_editor_absoluteX="173dp"
+        tools:layout_editor_absoluteY="352dp" />
+
+    <Button
+        android:id="@+id/cam_butt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Камера"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="493dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
