@@ -11,35 +11,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#121212"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="289dp"
-        android:layout_height="26dp"
+        android:layout_width="329dp"
+        android:layout_height="28dp"
         android:text="Выберите источник изображения:"
         android:textColor="#E2B4B4"
         android:textColorHint="#FFFFFF"
         android:textSize="18sp"
-        tools:layout_editor_absoluteX="79dp"
-        tools:layout_editor_absoluteY="221dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view2"
+        app:layout_constraintVertical_bias="0.266" />
 
     <Button
-        android:onClick="secondScr"
         android:id="@+id/gal_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="secondScr"
         android:text="Галерея"
-        tools:layout_editor_absoluteX="173dp"
-        tools:layout_editor_absoluteY="352dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="@+id/view2" />
 
     <Button
         android:id="@+id/cam_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Камера"
-        tools:layout_editor_absoluteX="176dp"
-        tools:layout_editor_absoluteY="493dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="@+id/view2"
+        app:layout_constraintVertical_bias="0.668" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
