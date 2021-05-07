@@ -1,11 +1,13 @@
 package com.example.uncleanpower
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
@@ -13,7 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+import java.text.SimpleDateFormat
 
 const val CAMERA_RQ = 101
 const val STORAGE_RQ = 102
@@ -31,6 +36,44 @@ class MainActivity : AppCompatActivity() {
         buttonTap()
     }
 
+    val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        when {
+            granted -> {
+                val uri = getRandomUri(this, ".jpg")
+                camera.launch(uri)// доступ к камере разрешен, открываем камеру
+            }
+            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                // доступ к камере запрещен, пользователь поставил галочку Don't ask again.
+            }
+            else -> {
+                // доступ к камере запрещен
+            }
+        }
+    }
+
+    fun getRandomFilepath(
+            context: Context,
+            extension: String,
+            directory: String = Environment.DIRECTORY_PICTURES
+    ): String {
+        return "${context.getExternalFilesDir(directory)?.absolutePath}/${System.currentTimeMillis()}.$extension"
+    }
+
+    fun getRandomUri(
+            context: Context,
+            extension: String,
+            directory: String = Environment.DIRECTORY_PICTURES
+    ): Uri {
+        return getUriFromPath(context, getRandomFilepath(context, extension, directory))
+    }
+
+    fun getUriFromPath(context: Context, path: String): Uri {
+        return FileProvider.getUriForFile(
+                context,
+                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                File(path)
+        )
+    }
 
     val camera = registerForActivityResult(ActivityResultContracts.TakePicture()) { uri ->
         // используем bitmap
@@ -63,7 +106,8 @@ class MainActivity : AppCompatActivity() {
         cam_butt.setOnClickListener {
             if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
             {
-                camera.launch()
+                val uri = getRandomUri(this, ".jpg")
+                camera.launch(uri)
                 val intent = Intent(this, SecondActivity::class.java)
 
 
