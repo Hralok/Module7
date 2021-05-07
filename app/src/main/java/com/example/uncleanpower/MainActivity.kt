@@ -14,69 +14,39 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
-//const val CAMERA_RQ = 101
-//const val STORAGE_RQ = 102
+const val CAMERA_RQ = 101
+const val STORAGE_RQ = 102
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        cam_butt.setOnClickListener {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                // объясняем пользователю, почему нам необходимо данное разрешение
-            } else {
-                permission.launch(Manifest.permission.CAMERA)
-            }
-        }
+        buttonTap()
     }
 
-    val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        when {
-            granted -> {
-                camera.launch(imageUri)// доступ к камере разрешен, открываем камеру
-            }
-            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // доступ к камере запрещен, пользователь поставил галочку Don't ask again.
-            }
-            else -> {
-                // доступ к камере запрещен
-            }
-        }
-    }
 
     val camera = registerForActivityResult(ActivityResultContracts.TakePicture()) { uri ->
         // используем bitmap
     }
 
+    private fun checkPerm (permission: String, requestCode: Int):Boolean {
+        /*
+        Проверяет наличие разрешения на использование камеры/галереи, в случае наличия разрешения возвращает значение true,
+        в противном случае запрашивает разрешение у пользователя после чего возвращает true или false в зависимости от того, было
+        ли получено разрешение
+        */
+        return if (ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED) {
+            true
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
+            ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED
+        }
+    }
 
-
-
-
-
-
-
-
-
-
-
-//    private fun checkPerm (permission: String, requestCode: Int):Boolean {
-//        /*
-//        Проверяет наличие разрешения на использование камеры/галереи, в случае наличия разрешения возвращает значение true,
-//        в противном случае запрашивает разрешение у пользователя после чего возвращает true или false в зависимости от того, было
-//        ли получено разрешение
-//        */
-//        return if (ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED) {
-//            true
-//        }
-//        else
-//        {
-//            ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
-//            ContextCompat.checkSelfPermission(applicationContext, permission) == PackageManager.PERMISSION_GRANTED
-//        }
-//    }
-//
-//    private fun buttonTap() {
+    private fun buttonTap() {
 //        gal_butt.setOnClickListener {
 //            if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_RQ))
 //            {
@@ -84,25 +54,27 @@ class MainActivity : AppCompatActivity() {
 //
 //            }
 //        }
-//        cam_butt.setOnClickListener {
-//            if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
-//            {
-//
-//
-//
+        cam_butt.setOnClickListener {
+            if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
+            {
+                camera.launch()
+
+
+            }
+        }
+    }
+}
+
+//    val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+//        when {
+//            granted -> {
+//                camera.launch()// доступ к камере разрешен, открываем камеру
+//            }
+//            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+//                // доступ к камере запрещен, пользователь поставил галочку Don't ask again.
+//            }
+//            else -> {
+//                // доступ к камере запрещен
 //            }
 //        }
 //    }
-//
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//    }
-
-
-
-
-//    fun cameraScr (view: View) {
-//        val secondS = Intent(this, CameraActivity::class.java)
-//        startActivity(secondS)
-//    }
-}
