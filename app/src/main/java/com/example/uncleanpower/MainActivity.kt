@@ -3,6 +3,7 @@ package com.example.uncleanpower
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +19,11 @@ const val CAMERA_RQ = 101
 const val STORAGE_RQ = 102
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val uriKey = "uriKey"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -58,8 +64,14 @@ class MainActivity : AppCompatActivity() {
             if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
             {
                 camera.launch()
+                val intent = Intent(this, SecondActivity::class.java)
 
 
+
+                var someYri: Uri? = null //передача некоторого Юри дальше по кругу активности (¬‿¬)
+                intent.putExtra(uriKey, someYri)
+
+                startActivity(intent)
             }
         }
     }
