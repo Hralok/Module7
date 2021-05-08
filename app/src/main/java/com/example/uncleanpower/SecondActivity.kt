@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -17,7 +18,7 @@ import androidx.core.content.FileProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_second.*
 import java.io.File
-
+import com.example.uncleanpower.FilterInv
 
 
 
@@ -81,6 +82,15 @@ class SecondActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
+
+            val negImg = FilterInv()
+            try {
+                var test = negImg.transform(takenImage)
+                Toast.makeText(this,"Runed",Toast.LENGTH_SHORT)
+            }
+            catch (e:Exception){
+                Log.d("kek","lol")
+            }
             imageView2.setImageBitmap(takenImage)
         }
         else {

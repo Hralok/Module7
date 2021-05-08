@@ -7,23 +7,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.createBitmap
 
 
-class FilterInv{
+class FilterInv (){
     var cm = intArrayOf(
-    -1, 0, 0, 0, 255,
-    0, -1, 0, 0, 255,
-    0, 0, -1, 0, 255,
-    0, 0, 0, 1, 0)
-
-    fun onCreate(savedInstanceState: Bundle?) {
+            -1, 0, 0, 0, 255,
+            0, -1, 0, 0, 255,
+            0, 0, -1, 0, 255,
+            0, 0, 0, 1, 0)
 
 
-            val bitmap = createBitmap(100, 100, Bitmap.Config.RGB_565) // передайте сюда битмап пж, это просто, чтобы было пока
+    fun transform(originalBitmap: Bitmap?): Bitmap? {
+        var bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
         bitmap?.apply {
-            val hei = bitmap.height
-            val wi = bitmap.width
+            val hei = height
+            val wi = width
             for (i in 0 until wi) {
                 for (j in 0 until hei) {
-                    val color = bitmap.getPixel(i, j)
+                    val color = getPixel(i, j)
                     val r = Color.red(color)
                     val g = Color.green(color)
                     val b = Color.blue(color)
@@ -34,11 +33,14 @@ class FilterInv{
                     val nb = (r * cm[10] + g * cm[11] + b * cm[12] + a * cm[13] + cm[14])
                     val na = (r * cm[15] + g * cm[16] + b * cm[17] + a * cm[18] + cm[19])
 
-                    bitmap.setPixel(i, j, Color.argb(na, nr, ng, nb))
-                    }
+                    setPixel(i, j, Color.argb(na, nr, ng, nb))
                 }
             }
-
         }
+        return bitmap
+    }
+
+
+
 
 }
