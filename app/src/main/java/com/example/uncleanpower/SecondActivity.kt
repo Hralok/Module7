@@ -21,22 +21,23 @@ import java.io.File
 import com.example.uncleanpower.FilterInv
 import com.example.uncleanpower.ColorCorrection
 import com.example.uncleanpower.FilterGW
+import com.example.uncleanpower.FiltrPerRef
 
-private lateinit var photoFile: File
-private const val FILE_NAME = "photo.jpg"
-private var takenImage: Bitmap? = null
+
 
 class SecondActivity : AppCompatActivity() {
 
+    private lateinit var photoFile: File
+    private var takenImage: Bitmap? = null
+
     companion object {
+        const val FILE_NAME = "photo.jpg"
         const val CAMERA_REQUEST_CODE = 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
-
-
 
         val img_sourse = intent.getIntExtra(MainActivity.imgSourseKey, 2)
 
@@ -61,10 +62,10 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    fun getCameraBitmap() {
+    private fun getCameraBitmap() {
         photoFile = getPhotoFile(FILE_NAME)
 
-        var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         photoFile = getPhotoFile(FILE_NAME)
         val fileProvider = FileProvider.getUriForFile(this, "edu.stanford.rkpandey.fileprovider", photoFile)
@@ -83,9 +84,9 @@ class SecondActivity : AppCompatActivity() {
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
 
-            val negImg = FilterGW()
+            val negImg = ColorCorrection()
 
-            imageView2.setImageBitmap(negImg.GrayWorld(takenImage))
+            imageView2.setImageBitmap(negImg.corr(takenImage))
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -93,9 +94,5 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
-    fun toMenu (view: View) {
-//        val menu = Intent(this, MainActivity::class.java)
-//        startActivity(menu)
-        getCameraBitmap()
-    }
+
 }

@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import kotlin.math.*
 
-class ColorCorrection() {
+class ColorCorrection {
 
     fun corr(originalBitmap: Bitmap?): Bitmap? {
         var bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)

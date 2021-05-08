@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.createBitmap
 
 
-class FilterInv (){
+class FilterInv{
     var cm = intArrayOf(
             -1, 0, 0, 0, 255,
             0, -1, 0, 0, 255,

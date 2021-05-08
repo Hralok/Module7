@@ -23,15 +23,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.text.SimpleDateFormat
 
-const val CAMERA_RQ = 101
-const val STORAGE_RQ = 102
-private lateinit var photoFile: File
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        const val imgSourseKey = "imgSourseKey"
+    private lateinit var photoFile: File
 
+    companion object {
+        const val CAMERA_RQ = 101
+        const val STORAGE_RQ = 102
+        const val imgSourseKey = "imgSourseKey"
     }
 
 
@@ -64,8 +64,8 @@ class MainActivity : AppCompatActivity() {
         gal_butt.setOnClickListener {
             if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_RQ))
             {
-                var intent = Intent(this, SecondActivity::class.java)
-                intent.putExtra(imgSourseKey, 1)
+                val intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra(imgSourseKey, 1) //сделать код источника понятнее
 
                 startActivity(intent)
             }
@@ -73,20 +73,10 @@ class MainActivity : AppCompatActivity() {
         cam_butt.setOnClickListener {
             if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
             {
-                var intent = Intent(this, SecondActivity::class.java)
+                val intent = Intent(this, SecondActivity::class.java)
                 intent.putExtra(imgSourseKey, 2)
 
                 startActivity(intent)
-
-//                var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//
-//                photoFile = getPhotoFile(FILE_NAME)
-//
-//
-//                val fileProvider = FileProvider.getUriForFile(this, "edu.stanford.rkpandey.fileprovider", photoFile)
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-//
-//                startActivityForResult(intent, CAMERA_REQUEST_CODE)
             }
         }
     }
