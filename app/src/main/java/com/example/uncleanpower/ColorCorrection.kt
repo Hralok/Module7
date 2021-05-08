@@ -10,8 +10,8 @@ class ColorCorrection() {
     fun corr(originalBitmap: Bitmap?): Bitmap? {
         var bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
         bitmap?.apply {
-            val hei = bitmap.height
-            val wi = bitmap.width
+            val hei = height
+            val wi = width
 
             val redColors = arrayOf(255, 0)
             val greenColors = arrayOf(255, 0)
@@ -20,7 +20,7 @@ class ColorCorrection() {
             for (i in 0 until wi) {
                 for (j in 0 until hei) {
 
-                    val color = bitmap.getPixel(i, j)
+                    val color = getPixel(i, j)
                     val r = Color.red(color)
                     val g = Color.green(color)
                     val b = Color.blue(color)
@@ -39,23 +39,20 @@ class ColorCorrection() {
             for (i in 0 until wi) {
                 for (j in 0 until hei) {
 
-                    val color = bitmap.getPixel(i, j)
+                    val color = getPixel(i, j)
                     val r = Color.red(color)
                     val g = Color.green(color)
                     val b = Color.blue(color)
-                    val a = Color.alpha(color)
 
                     val nr = (r - redColors[0]) * (255 - 0) / (redColors[1] - redColors[0])
                     val ng = (g - greenColors[0]) * (255 - 0) / (greenColors[1] - greenColors[0])
                     val nb = (b - blueColors[0]) * (255 - 0) / (blueColors[1] - blueColors[0])
 
-                    bitmap.setPixel(i, j, Color.argb(a, nr, ng, nb))
+                    setPixel(i, j, Color.rgb(nr, ng, nb))
                 }
             }
-
         }
 
         return bitmap
-
     }
 }

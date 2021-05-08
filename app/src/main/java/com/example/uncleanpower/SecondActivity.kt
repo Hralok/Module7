@@ -19,8 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_second.*
 import java.io.File
 import com.example.uncleanpower.FilterInv
-
-
+import com.example.uncleanpower.ColorCorrection
+import com.example.uncleanpower.FilterGW
 
 private lateinit var photoFile: File
 private const val FILE_NAME = "photo.jpg"
@@ -83,15 +83,9 @@ class SecondActivity : AppCompatActivity() {
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
 
-            val negImg = FilterInv()
-            try {
-                var test = negImg.transform(takenImage)
-                Toast.makeText(this,"Runed",Toast.LENGTH_SHORT)
-            }
-            catch (e:Exception){
-                Log.d("kek","lol")
-            }
-            imageView2.setImageBitmap(takenImage)
+            val negImg = FilterGW()
+
+            imageView2.setImageBitmap(negImg.GrayWorld(takenImage))
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
