@@ -41,13 +41,12 @@ class ColorCorrection() {
                 val r = Color.red(color)
                 val g = Color.green(color)
                 val b = Color.blue(color)
-                val a = Color.alpha(color)
 
                 val nr = (r - redColors[0]) * (255 - 0) / (redColors[1] - redColors[0])
                 val ng = (g - greenColors[0]) * (255 - 0) / (greenColors[1] - greenColors[0])
                 val nb = (b - blueColors[0]) * (255 - 0) / (blueColors[1] - blueColors[0])
 
-                bitmap.setPixel(i, j, Color.argb(a, nr, ng, nb))
+                bitmap.setPixel(i, j, Color.rgb(nr, ng, nb))
             }
         }
 

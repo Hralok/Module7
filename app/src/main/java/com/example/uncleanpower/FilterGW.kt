@@ -6,7 +6,7 @@ import androidx.core.graphics.createBitmap
 
 class FilterGW {
     fun GrayWorld(originalBitmap: Bitmap?): Bitmap? {
-        var bitmap = originalBitmap?.copy(Bitmap.Config.ARGB_8888, true)
+        val bitmap = originalBitmap?.copy(Bitmap.Config.ARGB_8888, true)
         bitmap?.apply {
             val hei = bitmap.height
             val wi = bitmap.width
