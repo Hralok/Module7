@@ -7,15 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.createBitmap
 
 
-class Filter : AppCompatActivity()  {
+class FilterInv{
     var cm = intArrayOf(
     -1, 0, 0, 0, 255,
     0, -1, 0, 0, 255,
     0, 0, -1, 0, 255,
     0, 0, 0, 1, 0)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+    fun onCreate(savedInstanceState: Bundle?) {
+
 
             val bitmap = createBitmap(100, 100, Bitmap.Config.RGB_565) // передайте сюда битмап пж, это просто, чтобы было пока
         bitmap?.apply {

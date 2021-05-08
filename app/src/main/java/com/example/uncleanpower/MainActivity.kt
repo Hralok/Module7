@@ -1,9 +1,12 @@
 package com.example.uncleanpower
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,61 +25,23 @@ import java.text.SimpleDateFormat
 
 const val CAMERA_RQ = 101
 const val STORAGE_RQ = 102
+private lateinit var photoFile: File
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val uriKey = "uriKey"
+        const val imgSourseKey = "imgSourseKey"
+
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
         buttonTap()
-    }
-
-    val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        when {
-            granted -> {
-                val uri = getRandomUri(this, ".jpg")
-                camera.launch(uri)// доступ к камере разрешен, открываем камеру
-            }
-            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // доступ к камере запрещен, пользователь поставил галочку Don't ask again.
-            }
-            else -> {
-                // доступ к камере запрещен
-            }
-        }
-    }
-
-    fun getRandomFilepath(
-            context: Context,
-            extension: String,
-            directory: String = Environment.DIRECTORY_PICTURES
-    ): String {
-        return "${context.getExternalFilesDir(directory)?.absolutePath}/${System.currentTimeMillis()}.$extension"
-    }
-
-    fun getRandomUri(
-            context: Context,
-            extension: String,
-            directory: String = Environment.DIRECTORY_PICTURES
-    ): Uri {
-        return getUriFromPath(context, getRandomFilepath(context, extension, directory))
-    }
-
-    fun getUriFromPath(context: Context, path: String): Uri {
-        return FileProvider.getUriForFile(
-                context,
-                "${BuildConfig.APPLICATION_ID}.fileprovider",
-                File(path)
-        )
-    }
-
-    val camera = registerForActivityResult(ActivityResultContracts.TakePicture()) { uri ->
-        // используем bitmap
     }
 
     private fun checkPerm (permission: String, requestCode: Int):Boolean {
@@ -96,41 +61,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buttonTap() {
-//        gal_butt.setOnClickListener {
-//            if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_RQ))
-//            {
-//                var i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//
-//            }
-//        }
-        cam_butt.setOnClickListener {
-            if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
+        gal_butt.setOnClickListener {
+            if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_RQ))
             {
-                val uri = getRandomUri(this, ".jpg")
-                camera.launch(uri)
-                val intent = Intent(this, SecondActivity::class.java)
-
-
-
-                var someYri: Uri? = null //передача некоторого Юри дальше по кругу активности (¬‿¬)
-                intent.putExtra(uriKey, someYri)
+                var intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra(imgSourseKey, 1)
 
                 startActivity(intent)
             }
         }
+        cam_butt.setOnClickListener {
+            if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
+            {
+                var intent = Intent(this, SecondActivity::class.java)
+                intent.putExtra(imgSourseKey, 2)
+
+                startActivity(intent)
+
+//                var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//
+//                photoFile = getPhotoFile(FILE_NAME)
+//
+//
+//                val fileProvider = FileProvider.getUriForFile(this, "edu.stanford.rkpandey.fileprovider", photoFile)
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
+//
+//                startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            }
+        }
     }
+
 }
 
-//    val permission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-//        when {
-//            granted -> {
-//                camera.launch()// доступ к камере разрешен, открываем камеру
-//            }
-//            !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-//                // доступ к камере запрещен, пользователь поставил галочку Don't ask again.
-//            }
-//            else -> {
-//                // доступ к камере запрещен
-//            }
-//        }
-//    }
+
+
+
+
