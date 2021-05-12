@@ -8,7 +8,7 @@ import kotlin.math.*
 class ColorCorrection {
 
     fun corr(originalBitmap: Bitmap?): Bitmap? {
-        var bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
+        val bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
         bitmap?.apply {
             val hei = height
             val wi = width
