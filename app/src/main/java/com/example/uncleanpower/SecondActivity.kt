@@ -9,8 +9,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,10 +20,22 @@ import com.example.uncleanpower.FilterInv
 import com.example.uncleanpower.ColorCorrection
 import com.example.uncleanpower.FilterGW
 import com.example.uncleanpower.FiltrPerRef
-
+import com.example.uncleanpower.bottomnavfrag.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.uncleanpower.databinding.ActivitySecondBinding
 
 
 class SecondActivity : AppCompatActivity() {
+    private val viewBinding by viewBinding(ActivitySecondBinding::bind, R.id.sec_ac)
+    val filtersfrag = FiltersFragment()
+    val crrotfrag = CropRotateFragment()
+    val drawfrag = DrawFragment()
+
+    val gwfil = GrayWorldFragment()
+    val ccfil = ColorCorrectionFragment()
+    val invfil = InversionFragment()
 
     private lateinit var photoFile: File
     private var takenImage: Bitmap? = null
@@ -44,6 +54,38 @@ class SecondActivity : AppCompatActivity() {
         if (img_sourse == 2){
             getCameraBitmap()
         }
+
+        viewBinding.botNav.setOnNavigationItemSelectedListener {item ->
+            val trans =  supportFragmentManager.beginTransaction()
+            when (item.itemId) {
+                R.id.effects -> {
+                    trans
+                        .add(R.id.sec_ac, FiltersFragment.newInstance(), FiltersFragment.TAG)
+                        .commit()
+                    true
+                }
+
+                R.id.draw -> {
+                    trans
+                        .add(R.id.sec_ac, DrawFragment.newInstance(), DrawFragment.TAG)
+                        .commit()
+                    true
+                }
+
+                R.id.crop_rotate -> {
+                    trans
+                        .add(R.id.sec_ac, CropRotateFragment.newInstance(), CropRotateFragment.TAG)
+                        .commit()
+                    true
+                }
+                else -> false
+            }
+
+        }
+    }
+
+    private fun extratoolbar () {
+
     }
 
     private fun checkPerm (permission: String, requestCode: Int):Boolean {
@@ -84,9 +126,9 @@ class SecondActivity : AppCompatActivity() {
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
 
-            val negImg = ColorCorrection()
+            //val negImg = ColorCorrection()
 
-            imageView2.setImageBitmap(negImg.corr(takenImage))
+            imageView2.setImageBitmap(takenImage)
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)

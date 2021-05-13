@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SecondActivity">
+    tools:context=".SecondActivity"
+    android:id="@+id/sec_ac">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -16,7 +17,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="93dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fl_wrapper"
+        app:layout_constraintBottom_toBottomOf="@+id/all_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +28,7 @@
 
 
     <FrameLayout
-        android:id="@+id/fl_wrapper"
+        android:id="@+id/all_nav"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -41,7 +42,6 @@
             app:itemIconTint="#fff"
             app:itemTextColor="#fff"
             app:menu="@menu/nav_menu"></com.google.android.material.bottomnavigation.BottomNavigationView>
-
 
     </FrameLayout>
 
