@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val CAMERA_RQ = 101
         const val STORAGE_RQ = 102
+        const val CAMERA_SOURCE = 1
+        const val STORAGE_SOURSE = 2
         const val imgSourseKey = "imgSourseKey"
     }
 
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE_RQ))
             {
                 val intent = Intent(this, SecondActivity::class.java)
-                intent.putExtra(imgSourseKey, 1) //сделать код источника понятнее
+                intent.putExtra(imgSourseKey, STORAGE_SOURSE) //сделать код источника понятнее
 
                 startActivity(intent)
             }
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             if (checkPerm(Manifest.permission.CAMERA, CAMERA_RQ))
             {
                 val intent = Intent(this, SecondActivity::class.java)
-                intent.putExtra(imgSourseKey, 2)
+                intent.putExtra(imgSourseKey, CAMERA_SOURCE)
 
                 startActivity(intent)
             }
