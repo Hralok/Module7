@@ -170,18 +170,15 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
-<<<<<<< HEAD
      fun scaled () {
         val negImg = Scale()
         imageView2.setImageBitmap(negImg.sscale(0.5f, takenImage))
     }
 
-
-=======
     private fun buttonTap() {
         button.setOnClickListener {
             getGalleryBitmap()
         }
     }
->>>>>>> 4ebbb96c85af37cf987af498d678c8283430e68a
+
 }
