@@ -7,13 +7,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.graphics.drawable.toBitmap
 import kotlinx.android.synthetic.main.activity_second.*
 import java.io.File
 import com.example.uncleanpower.FilterInv
@@ -28,6 +29,16 @@ import com.example.uncleanpower.databinding.ActivitySecondBinding
 
 
 class SecondActivity : AppCompatActivity() {
+
+    companion object {
+        const val FILE_NAME = "photo.jpg"
+        const val CAMERA_SOURCE = 1
+        const val GALLERY_SOURSE = 2
+        const val CAMERA_REQUEST_CODE = 3
+        const val GALLERY_REQUEST_CODE = 4
+    }
+
+
     private val viewBinding by viewBinding(ActivitySecondBinding::bind, R.id.sec_ac)
     val filtersfrag = FiltersFragment()
     val crrotfrag = CropRotateFragment()
@@ -40,42 +51,52 @@ class SecondActivity : AppCompatActivity() {
     private lateinit var photoFile: File
     private var takenImage: Bitmap? = null
 
-    companion object {
-        const val FILE_NAME = "photo.jpg"
-        const val CAMERA_REQUEST_CODE = 1
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
+        buttonTap()
 
-        val img_sourse = intent.getIntExtra(MainActivity.imgSourseKey, 2)
+        val img_sourse = intent.getIntExtra(MainActivity.imgSourseKey, CAMERA_SOURCE)
 
-        if (img_sourse == 2){
+        if (img_sourse == CAMERA_SOURCE){
             getCameraBitmap()
+        }
+        else if (img_sourse == GALLERY_SOURSE) {
+            getGalleryBitmap()
         }
 
         viewBinding.botNav.setOnNavigationItemSelectedListener {item ->
             val trans =  supportFragmentManager.beginTransaction()
+            var itid = item.itemId
             when (item.itemId) {
                 R.id.effects -> {
                     trans
-                        .add(R.id.sec_ac, FiltersFragment.newInstance(), FiltersFragment.TAG)
+                        .replace(R.id.all_nav, FiltersFragment.newInstance(), FiltersFragment.TAG)
                         .commit()
+
                     true
                 }
 
                 R.id.draw -> {
                     trans
-                        .add(R.id.sec_ac, DrawFragment.newInstance(), DrawFragment.TAG)
+                        .replace(R.id.all_nav, DrawFragment.newInstance(), DrawFragment.TAG)
                         .commit()
                     true
                 }
 
                 R.id.crop_rotate -> {
                     trans
-                        .add(R.id.sec_ac, CropRotateFragment.newInstance(), CropRotateFragment.TAG)
+                        .replace(R.id.all_nav, CropRotateFragment.newInstance(), CropRotateFragment.TAG)
                         .commit()
+                    true
+                }
+
+                R.id.scale -> {
+                    trans
+                            .replace(R.id.all_nav, ScaleFragment.newInstance(), ScaleFragment.TAG)
+                            .commit()
+                            scaled()
                     true
                 }
                 else -> false
@@ -84,9 +105,12 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    private fun extratoolbar () {
-
-    }
+//    private fun extratoolbar () {
+//        val trans =  supportFragmentManager.beginTransaction()
+//        trans.add(R.id.all_nav, GrayWorldFragment.newInstance(), GrayWorldFragment.TAG)
+//        trans.add(R.id.all_nav, InversionFragment.newInstance(), InversionFragment.TAG)
+//        trans.add(R.id.all_nav, ColorCorrectionFragment.newInstance(), ColorCorrectionFragment.TAG)
+//    }
 
     private fun checkPerm (permission: String, requestCode: Int):Boolean {
         /*
@@ -105,8 +129,6 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun getCameraBitmap() {
-        photoFile = getPhotoFile(FILE_NAME)
-
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         photoFile = getPhotoFile(FILE_NAME)
@@ -114,6 +136,15 @@ class SecondActivity : AppCompatActivity() {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
 
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
+    private fun getGalleryBitmap() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, GALLERY_REQUEST_CODE)
+        }
+
     }
 
     private fun getPhotoFile(fileName: String?): File {
@@ -125,10 +156,13 @@ class SecondActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
-
-            //val negImg = ColorCorrection()
-
             imageView2.setImageBitmap(takenImage)
+        }
+        else if (requestCode == SecondActivity.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            val imgPath: Uri?  = data?.data
+            imageView2.setImageURI(imgPath)
+
+            takenImage = imageView2.drawable.toBitmap()
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -136,5 +170,18 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
+<<<<<<< HEAD
+     fun scaled () {
+        val negImg = Scale()
+        imageView2.setImageBitmap(negImg.sscale(0.5f, takenImage))
+    }
 
+
+=======
+    private fun buttonTap() {
+        button.setOnClickListener {
+            getGalleryBitmap()
+        }
+    }
+>>>>>>> 4ebbb96c85af37cf987af498d678c8283430e68a
 }

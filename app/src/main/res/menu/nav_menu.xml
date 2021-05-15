@@ -15,6 +15,13 @@
     <item
         android:id="@+id/draw"
         android:icon="@drawable/ic_draw"
-        android:title="Набросок"
+        android:title="Рисунок"
         />
+
+    <item
+        android:id="@+id/scale"
+        android:icon="@drawable/ic_plusmin"
+        android:title="Масштаб"
+        />
+
 </menu>
