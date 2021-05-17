@@ -2,17 +2,21 @@ package com.example.uncleanpower
 
 import android.annotation.TargetApi
 import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Bundle
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.InputType
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -29,11 +33,9 @@ import com.example.uncleanpower.StaticColorCorrection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.uncleanpower.bottomnavfrag.*
 import com.example.uncleanpower.databinding.ActivitySecondBinding
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.text.InputType
-import android.widget.EditText
+import kotlinx.android.synthetic.main.activity_second.*
 
 class SecondActivity : AppCompatActivity() {
 
@@ -103,7 +105,7 @@ class SecondActivity : AppCompatActivity() {
                     trans
                             .replace(R.id.all_nav, ScaleFragment.newInstance(), ScaleFragment.TAG)
                             .commit()
-                            scaled()
+                            dialog()
                     true
                 }
                 else -> false
@@ -111,13 +113,6 @@ class SecondActivity : AppCompatActivity() {
 
         }
     }
-
-//    private fun extratoolbar () {
-//        val trans =  supportFragmentManager.beginTransaction()
-//        trans.add(R.id.all_nav, GrayWorldFragment.newInstance(), GrayWorldFragment.TAG)
-//        trans.add(R.id.all_nav, InversionFragment.newInstance(), InversionFragment.TAG)
-//        trans.add(R.id.all_nav, ColorCorrectionFragment.newInstance(), ColorCorrectionFragment.TAG)
-//    }
 
     private fun checkPerm (permission: String, requestCode: Int):Boolean {
         /*
@@ -187,9 +182,35 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
-     fun scaled () {
-        val negImg = Scale()
-        imageView2.setImageBitmap(negImg.sscale(0.5f, takenImage))
+    private fun dialog () {
+        var m_Text = ""
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Введите коэффициент масштабирования")
+        val input = EditText(this)
+
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton("Oк", DialogInterface.OnClickListener {
+            dialog, which -> m_Text = input.text.toString()
+            scaled(m_Text)
+        })
+        builder.setNegativeButton("Отмена", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+
+        builder.show()
+    }
+
+     fun scaled (k: String) {
+         val koef = k.replace (',', '.')
+         val regex = "[0-9]+[.]?[0-9]*".toRegex()
+         if (regex.matches(koef)) {
+             val what = koef.toDouble()
+             val negImg = Scale()
+             imageView2.setImageBitmap(negImg.sscale(what, this, takenImage))
+         } else {
+             Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_SHORT).show()
+         }
+
     }
 
     private fun buttonTap() {
@@ -197,11 +218,11 @@ class SecondActivity : AppCompatActivity() {
             getGalleryBitmap()
         }
         button2.setOnClickListener {
-            dialog()
+            dialogo()
         }
     }
 
-    private fun dialog () {
+    private fun dialogo () {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Введите коэффициент масштабирования")
         val input = EditText(this)
