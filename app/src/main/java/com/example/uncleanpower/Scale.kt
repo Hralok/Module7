@@ -2,9 +2,8 @@ package com.example.uncleanpower
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.widget.Toast
 
-class Scale {
+class Scale { /* ЛАЖА */
     fun sscale(koef: Double, context: Context, originalBitmap: Bitmap?): Bitmap? {
         var bitmap : Bitmap? = originalBitmap
         originalBitmap?.apply {

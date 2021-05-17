@@ -173,8 +173,8 @@ class SecondActivity : AppCompatActivity() {
 
             val source = BitmapFactory.decodeResource(this.getResources(), R.drawable.rkccehynkiy)
 
-            imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
-//            imageView2.setImageBitmap(Rotation().rotate(takenImage, angl))
+//            imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
+            imageView2.setImageBitmap(Rotation().rotate(Rotation().rotate(takenImage, angl), angl+))
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
