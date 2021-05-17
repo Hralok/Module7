@@ -1,5 +1,6 @@
 package com.example.uncleanpower
 
+import android.annotation.TargetApi
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
@@ -22,11 +24,16 @@ import com.example.uncleanpower.ColorCorrection
 import com.example.uncleanpower.FilterGW
 import com.example.uncleanpower.FiltrPerRef
 import com.example.uncleanpower.bottomnavfrag.*
+import com.example.uncleanpower.Rotation
+import com.example.uncleanpower.StaticColorCorrection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.uncleanpower.databinding.ActivitySecondBinding
-
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.text.InputType
+import android.widget.EditText
 
 class SecondActivity : AppCompatActivity() {
 
@@ -38,11 +45,12 @@ class SecondActivity : AppCompatActivity() {
         const val GALLERY_REQUEST_CODE = 4
     }
 
-
     private val viewBinding by viewBinding(ActivitySecondBinding::bind, R.id.sec_ac)
     val filtersfrag = FiltersFragment()
     val crrotfrag = CropRotateFragment()
     val drawfrag = DrawFragment()
+
+    var angl:Double = 0.0
 
     val gwfil = GrayWorldFragment()
     val ccfil = ColorCorrectionFragment()
@@ -50,7 +58,6 @@ class SecondActivity : AppCompatActivity() {
 
     private lateinit var photoFile: File
     private var takenImage: Bitmap? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,7 +135,7 @@ class SecondActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCameraBitmap() {
+    private fun getCameraBitmap(){
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         photoFile = getPhotoFile(FILE_NAME)
@@ -138,7 +145,7 @@ class SecondActivity : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
-    private fun getGalleryBitmap() {
+    private fun getGalleryBitmap(){
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
         if (intent.resolveActivity(packageManager) != null) {
@@ -147,6 +154,7 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.FROYO)
     private fun getPhotoFile(fileName: String?): File {
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         val storageDirectory = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -156,6 +164,9 @@ class SecondActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
+
+//            var l = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
+
             imageView2.setImageBitmap(takenImage)
         }
         else if (requestCode == SecondActivity.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK){
@@ -163,6 +174,12 @@ class SecondActivity : AppCompatActivity() {
             imageView2.setImageURI(imgPath)
 
             takenImage = imageView2.drawable.toBitmap()
+
+
+            val source = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
+
+            imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
+
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
@@ -179,6 +196,29 @@ class SecondActivity : AppCompatActivity() {
         button.setOnClickListener {
             getGalleryBitmap()
         }
+        button2.setOnClickListener {
+            dialog()
+        }
     }
+
+    private fun dialog () {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Введите коэффициент масштабирования")
+        val input = EditText(this)
+
+
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton("Oк", DialogInterface.OnClickListener {
+            dialog, which -> angl = input.text.toString().toDouble()
+        })
+        builder.setNegativeButton("Отмена", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+
+        builder.show()
+
+    }
+
+
 
 }
