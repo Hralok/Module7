@@ -43,7 +43,7 @@ class StaticColorCorrection {
         return target
     }
 
-    private fun getExpectationDeviation(originalBitmap: Bitmap?): Array<Array<Int>> {
+    private fun getExpectationDeviation(originalBitmap: Bitmap?):  List<List<Int>> {
         val bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
 
         var expRed = 0 // мат. ожидания по цветам
@@ -83,10 +83,8 @@ class StaticColorCorrection {
         val greenDev = ((egKv - expGreen.toDouble().pow(2)).pow(0.5)).toInt()
         val blueDev = ((ebKv - expBlue.toDouble().pow(2)).pow(0.5)).toInt()
 
-        val a = arrayOf<Array<Int>>()
-        a[RED_COLOR] = arrayOf(expRed, redDev)
-        a[GREEN_COLOR] = arrayOf(expGreen, greenDev)
-        a[BLUE_COLOR] = arrayOf(expBlue, blueDev)
+        val a = listOf(listOf(expRed, redDev), listOf(expGreen, greenDev), listOf(expBlue, blueDev))
+
 
         return a
     }

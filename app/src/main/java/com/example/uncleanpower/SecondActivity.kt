@@ -50,7 +50,7 @@ class SecondActivity : AppCompatActivity() {
     val crrotfrag = CropRotateFragment()
     val drawfrag = DrawFragment()
 
-    var angl:Double = 0.0
+    var angl:Double = 0.1
 
     val gwfil = GrayWorldFragment()
     val ccfil = ColorCorrectionFragment()
@@ -165,7 +165,7 @@ class SecondActivity : AppCompatActivity() {
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
 
-//            var l = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
+
 
             imageView2.setImageBitmap(takenImage)
         }
@@ -176,10 +176,10 @@ class SecondActivity : AppCompatActivity() {
             takenImage = imageView2.drawable.toBitmap()
 
 
-            val source = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
+            val source = BitmapFactory.decodeResource(this.getResources(), R.drawable.rkccehynkiy)
 
             imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
-
+//            imageView2.setImageBitmap(Rotation().rotate(takenImage, angl))
         }
         else {
             super.onActivityResult(requestCode, resultCode, data)
