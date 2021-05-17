@@ -41,16 +41,16 @@
             app:itemBackground="@color/purple_500"
             app:itemIconTint="#fff"
             app:itemTextColor="#fff"
-            app:menu="@menu/nav_menu"
-            app:labelVisibilityMode="labeled"></com.google.android.material.bottomnavigation.BottomNavigationView>
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/nav_menu"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
     </FrameLayout>
 
     <Button
         android:id="@+id/button"
-        android:layout_width="112dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
 
         android:text="@string/localisation"
         app:layout_constraintBottom_toTopOf="@+id/imageView2"
@@ -59,6 +59,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.75" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="318dp"
+        android:layout_marginBottom="683dp"
+        android:text="Угол поворота" />
 
 
 </RelativeLayout>
