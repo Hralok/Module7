@@ -171,9 +171,9 @@ class SecondActivity : AppCompatActivity() {
             takenImage = imageView2.drawable.toBitmap()
 
 
-            val source = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
+            //val source = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
 
-            imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
+            //imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
 
         }
         else {
@@ -205,8 +205,9 @@ class SecondActivity : AppCompatActivity() {
          val regex = "[0-9]+[.]?[0-9]*".toRegex()
          if (regex.matches(koef)) {
              val what = koef.toDouble()
-             val negImg = Scale()
-             imageView2.setImageBitmap(negImg.sscale(what, this, takenImage))
+             val negImg = Scale().sscale(what, takenImage)
+             imageView2.setImageBitmap(negImg)
+             //null
          } else {
              Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_SHORT).show()
          }
