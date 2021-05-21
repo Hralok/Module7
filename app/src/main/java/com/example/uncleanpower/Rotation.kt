@@ -10,7 +10,8 @@ class Rotation {
         var rotated: Bitmap? = null
 
         originalBitmap?.let {
-            val diagonal = sqrt((originalBitmap.height.toDouble()*originalBitmap.height.toDouble()) + (originalBitmap.width.toDouble()*originalBitmap.width.toDouble()))
+            val diagonal = sqrt((originalBitmap.height.toDouble()*originalBitmap.height.toDouble()) +
+                    (originalBitmap.width.toDouble()*originalBitmap.width.toDouble()))
             val diagAngle =  acos(originalBitmap.height.toDouble() / diagonal) * 180 / PI
 
             val height: Double
@@ -41,7 +42,9 @@ class Rotation {
                 for (j in 0 until originalBitmap.height) {
                     val color = originalBitmap.getPixel(i, j)
 
-                    radius = sqrt((originalCenterX - i.toDouble()) * (originalCenterX - i.toDouble()) + (originalCenterY - j.toDouble()) * (originalCenterY - j.toDouble()))
+                    radius = sqrt((originalCenterX - i.toDouble()) * (originalCenterX - i.toDouble()) +
+                            (originalCenterY - j.toDouble()) * (originalCenterY - j.toDouble()))
+
                     var startAngle = acos(abs(originalCenterY - j.toDouble()) / radius) * 180 / PI
                     if (originalCenterX < i.toDouble() && originalCenterY >= j.toDouble()) {
                         startAngle += 0
