@@ -3,19 +3,13 @@
     <item
         android:id="@+id/crop_rotate"
         android:icon="@drawable/ic_crop_rotate"
-        android:title="Обрезать"
+        android:title="Шакальный поворот"
         />
 
     <item
         android:id="@+id/effects"
         android:icon="@drawable/ic_effects"
         android:title="Фильтры"
-        />
-
-    <item
-        android:id="@+id/draw"
-        android:icon="@drawable/ic_draw"
-        android:title="Рисунок"
         />
 
     <item

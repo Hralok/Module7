@@ -32,11 +32,11 @@ class StaticColorCorrection {
                     val g = Color.green(color)
                     val b = Color.blue(color)
 
-                    val nr = sInfo[RED_COLOR][0] + (r - tInfo[RED_COLOR][0]) * (sInfo[RED_COLOR][1] / tInfo[RED_COLOR][1])
-                    val ng = sInfo[GREEN_COLOR][0] + (g - tInfo[GREEN_COLOR][0]) * (sInfo[GREEN_COLOR][1] / tInfo[GREEN_COLOR][1])
-                    val nb = sInfo[BLUE_COLOR][0] + (b - tInfo[BLUE_COLOR][0]) * (sInfo[BLUE_COLOR][1] / tInfo[BLUE_COLOR][1])
+                    val nr = sInfo[RED_COLOR][0] + (r - tInfo[RED_COLOR][0]) * (sInfo[RED_COLOR][1] / (tInfo[RED_COLOR][1]+0.000001))
+                    val ng = sInfo[GREEN_COLOR][0] + (g - tInfo[GREEN_COLOR][0]) * (sInfo[GREEN_COLOR][1] / (tInfo[GREEN_COLOR][1]+0.000001))
+                    val nb = sInfo[BLUE_COLOR][0] + (b - tInfo[BLUE_COLOR][0]) * (sInfo[BLUE_COLOR][1] / (tInfo[BLUE_COLOR][1]+0.000001))
 
-                    setPixel(i, j, Color.rgb(nr, ng, nb))
+                    setPixel(i, j, Color.rgb(nr.toInt(), ng.toInt(), nb.toInt()))
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.example.uncleanpower
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
@@ -28,7 +29,7 @@ import com.example.uncleanpower.ColorCorrection
 import com.example.uncleanpower.FilterGW
 import com.example.uncleanpower.FiltrPerRef
 import com.example.uncleanpower.bottomnavfrag.*
-import com.example.uncleanpower.Rotation
+import com.example.uncleanpower.JackalRotation
 import com.example.uncleanpower.StaticColorCorrection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -36,6 +37,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.uncleanpower.bottomnavfrag.*
 import com.example.uncleanpower.databinding.ActivitySecondBinding
 import kotlinx.android.synthetic.main.activity_second.*
+import java.lang.Math.sqrt
 
 class SecondActivity : AppCompatActivity() {
 
@@ -47,12 +49,24 @@ class SecondActivity : AppCompatActivity() {
         const val GALLERY_REQUEST_CODE = 4
     }
 
-    private val viewBinding by viewBinding(ActivitySecondBinding::bind, R.id.sec_ac)
+    var needColCor:Boolean = false
+    var needGW:Boolean = false
+    var needInv:Boolean = false
+    var needPerRef:Boolean = false
+    var needStaticColCor:Boolean = false
+    //val source = BitmapFactory.decodeResource(this.getResources(), R.drawable.rkccehynkiy)
+    var needBlur:Boolean = false
+    var blurKoef:Int = 1
+    var needScale:Boolean = false
+    var scaleKoef:Double = 1.0
+    var needRotate:Boolean = false
+    var angl:Double = 0.1
+
+    var toOriginal:Boolean = true
+
     val filtersfrag = FiltersFragment()
     val crrotfrag = CropRotateFragment()
     val drawfrag = DrawFragment()
-
-    var angl:Double = 0.0
 
     val gwfil = GrayWorldFragment()
     val ccfil = ColorCorrectionFragment()
@@ -60,6 +74,7 @@ class SecondActivity : AppCompatActivity() {
 
     private lateinit var photoFile: File
     private var takenImage: Bitmap? = null
+    private var renderedImage: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,22 +90,14 @@ class SecondActivity : AppCompatActivity() {
             getGalleryBitmap()
         }
 
-        viewBinding.botNav.setOnNavigationItemSelectedListener {item ->
+        bot_nav.setOnNavigationItemSelectedListener {item ->
             val trans =  supportFragmentManager.beginTransaction()
-            var itid = item.itemId
             when (item.itemId) {
                 R.id.effects -> {
                     trans
                         .replace(R.id.all_nav, FiltersFragment.newInstance(), FiltersFragment.TAG)
                         .commit()
 
-                    true
-                }
-
-                R.id.draw -> {
-                    trans
-                        .replace(R.id.all_nav, DrawFragment.newInstance(), DrawFragment.TAG)
-                        .commit()
                     true
                 }
 
@@ -105,7 +112,7 @@ class SecondActivity : AppCompatActivity() {
                     trans
                             .replace(R.id.all_nav, ScaleFragment.newInstance(), ScaleFragment.TAG)
                             .commit()
-                            dialog()
+                            dialogForScale()
                     true
                 }
                 else -> false
@@ -131,6 +138,8 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun getCameraBitmap(){
+        filterReset()
+
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         photoFile = getPhotoFile(FILE_NAME)
@@ -140,9 +149,13 @@ class SecondActivity : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
+
     private fun getGalleryBitmap(){
+        filterReset()
+
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
+
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, GALLERY_REQUEST_CODE)
         }
@@ -156,24 +169,30 @@ class SecondActivity : AppCompatActivity() {
         return File.createTempFile(fileName, ".jpg", storageDirectory)
     }
 
+    private fun filterReset(){
+        needColCor = false
+        needGW = false
+        needInv = false
+        needPerRef = false
+        needStaticColCor = false
+        needBlur = false
+        blurKoef = 1
+        needScale = false
+        scaleKoef = 1.0
+        needRotate = true
+        angl = 90.1
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
         if (requestCode == SecondActivity.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
-
-//            var l = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
 
             imageView2.setImageBitmap(takenImage)
         }
         else if (requestCode == SecondActivity.GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             val imgPath: Uri?  = data?.data
             imageView2.setImageURI(imgPath)
-
             takenImage = imageView2.drawable.toBitmap()
-
-
-            //val source = BitmapFactory.decodeResource(context.getResources(), R.drawable.rkccehynkiy)
-
-            //imageView2.setImageBitmap(StaticColorCorrection().corr(source, takenImage))
 
         }
         else {
@@ -182,7 +201,7 @@ class SecondActivity : AppCompatActivity() {
 
     }
 
-    private fun dialog () {
+    private fun dialogForScale () {
         var m_Text = ""
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Введите коэффициент масштабирования")
@@ -196,6 +215,29 @@ class SecondActivity : AppCompatActivity() {
             scaled(m_Text)
         })
         builder.setNegativeButton("Отмена", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+
+        builder.show()
+    }
+
+    private fun dialogForNewImage () {
+        var m_Text = ""
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Выберите источник изображения")
+
+        builder.setPositiveButton("Галлерея", DialogInterface.OnClickListener { dialog, _ -> getGalleryBitmap(); dialog.cancel()})
+        builder.setNegativeButton("Камера", DialogInterface.OnClickListener { dialog, _ -> getCameraBitmap(); dialog.cancel() })
+
+        builder.show()
+    }
+
+    private fun dialogForSize () {
+        var m_Text = ""
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Вы хоите применить изменения к оригинальному изображению или к его уменьшенной версии? " +
+                "Применение к уменьшенной версии позволит выполнить алгоритмы быстрее!")
+
+        builder.setPositiveButton("Применить к оригинальному", DialogInterface.OnClickListener { dialog, _ -> toOriginal = true; render(); dialog.cancel()})
+        builder.setNegativeButton("Применить к уменьшеному", DialogInterface.OnClickListener { dialog, _ -> toOriginal = false; render(); dialog.cancel() })
 
         builder.show()
     }
@@ -216,30 +258,76 @@ class SecondActivity : AppCompatActivity() {
 
     private fun buttonTap() {
         button.setOnClickListener {
-            getGalleryBitmap()
+            dialogForNewImage()
         }
         button2.setOnClickListener {
-            dialogo()
+            dialogForSize()
         }
     }
 
-    private fun dialogo () {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Введите коэффициент масштабирования")
-        val input = EditText(this)
+    private fun convertToRealSize(original:Bitmap?):Bitmap? {
+        var corrected:Bitmap? = null
 
+        original?.let {
+            if (original.height * original.width > 250000){
+                val scKoef = sqrt(250000 / (original.height * original.width).toDouble())
+                corrected = Scale().sscale(scKoef, original)
+            }
+            else{
+                corrected = original
+            }
+        }
 
-        input.inputType = InputType.TYPE_CLASS_TEXT
-        builder.setView(input)
-
-        builder.setPositiveButton("Oк", DialogInterface.OnClickListener {
-            dialog, which -> angl = input.text.toString().toDouble()
-        })
-        builder.setNegativeButton("Отмена", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
-
-        builder.show()
-
+        return corrected
     }
+
+
+
+    private fun render () {
+        if (toOriginal){
+            renderedImage = takenImage
+        }
+        else{
+            renderedImage = convertToRealSize(takenImage)
+        }
+
+        if (needColCor){
+            renderedImage = ColorCorrection().corr(renderedImage)
+            Toast.makeText(this, "ColorCorrection completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needPerRef){
+            renderedImage = FiltrPerRef().PerfectReflector(renderedImage)
+            Toast.makeText(this, "PerfectReflection completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needStaticColCor){
+            //renderedImage = StaticColorCorrection().corr(source, renderedImage)
+            Toast.makeText(this, "StaticColorCorrection completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needGW){
+            renderedImage = FilterGW().GrayWorld(renderedImage)
+            Toast.makeText(this, "GrayWorld completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needInv){
+            renderedImage = FilterInv().transform(renderedImage)
+            Toast.makeText(this, "Inversion completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needBlur){
+            renderedImage = GaussianBlur().gauss(renderedImage, blurKoef)
+            Toast.makeText(this, "Blur completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needScale){
+            renderedImage = Scale().sscale(scaleKoef, renderedImage)
+            Toast.makeText(this, "Scale completed", Toast.LENGTH_SHORT).show()
+        }
+        if (needRotate){
+            renderedImage = JackalRotation().rotate(renderedImage, angl)
+            Toast.makeText(this, "Rotation completed", Toast.LENGTH_SHORT).show()
+        }
+
+        imageView2.setImageBitmap(renderedImage)
+    }
+
+
 
 
 

@@ -3,7 +3,7 @@ package com.example.uncleanpower
 import android.graphics.Bitmap
 import kotlin.math.*
 
-class Rotation {
+class JackalRotation {
 
     fun rotate(originalBitmap: Bitmap?, angle: Double): Bitmap? {
 
