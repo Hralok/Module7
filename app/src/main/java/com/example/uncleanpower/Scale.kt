@@ -64,28 +64,25 @@ class Scale {
 
                for (i in 0 until newhei) {
                    x = 0
-
                    if (m >= 1) {
-                       for (j in 0 until newwi) {
-                           if (n < 1) {
-                               n += koef
-                               val hey = bitmap.getPixel(x, y)
-                               mapbit?.setPixel(j, i, hey)
-                               x++
-                           } else {
-                               n--
-                               val hey = bitmap.getPixel(x, y)
-                               mapbit?.setPixel(j, i, hey)
-
-                           }
-                           //j++
-                       }
                        m--
                    }
                    else {
                        m += koef
                        y++
                    }
+                   for (j in 0 until newwi) {
+                       if (n < 1) {
+                       n += koef
+                       x++
+                   } else {
+                       n--
+                   }
+                       val hey = bitmap.getPixel(x, y)
+                       mapbit?.setPixel(j, i, hey)
+
+                   }
+
                    }
            }
         }
