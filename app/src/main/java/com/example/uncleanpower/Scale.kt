@@ -60,18 +60,25 @@ class Scale {
                var m = koef
                var x = 0
                var y = 0
+               var j = 0
 
                for (i in 0 until newhei) {
                    x = 0
+
                    if (m >= 1) {
                        for (j in 0 until newwi) {
-                           if (n < 1 && x < newwi) {
+                           if (n < 1) {
                                n += koef
+                               val hey = bitmap.getPixel(x, y)
+                               mapbit?.setPixel(j, i, hey)
                                x++
+                           } else {
+                               n--
+                               val hey = bitmap.getPixel(x, y)
+                               mapbit?.setPixel(j, i, hey)
+
                            }
-                           n--
-                           val hey = bitmap.getPixel(x, y)
-                           mapbit?.setPixel(j, i, hey)
+                           //j++
                        }
                        m--
                    }
