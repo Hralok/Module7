@@ -1,6 +1,6 @@
 package com.example.uncleanpower
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
@@ -24,19 +24,6 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import kotlinx.android.synthetic.main.activity_second.*
 import java.io.File
-import com.example.uncleanpower.FilterInv
-import com.example.uncleanpower.ColorCorrection
-import com.example.uncleanpower.FilterGW
-import com.example.uncleanpower.FiltrPerRef
-import com.example.uncleanpower.bottomnavfrag.*
-import com.example.uncleanpower.JackalRotation
-import com.example.uncleanpower.StaticColorCorrection
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import by.kirich1409.viewbindingdelegate.viewBinding
-import com.example.uncleanpower.bottomnavfrag.*
-import com.example.uncleanpower.databinding.ActivitySecondBinding
-import kotlinx.android.synthetic.main.activity_second.*
 import java.lang.Math.sqrt
 
 class SecondActivity : AppCompatActivity() {
@@ -53,14 +40,15 @@ class SecondActivity : AppCompatActivity() {
     var needGW:Boolean = false
     var needInv:Boolean = false
     var needPerRef:Boolean = false
-    var needStaticColCor:Boolean = false
-    //val source = BitmapFactory.decodeResource(this.getResources(), R.drawable.rkccehynkiy)
     var needBlur:Boolean = false
     var blurKoef:Int = 1
     var needScale:Boolean = false
     var scaleKoef:Double = 1.0
     var needRotate:Boolean = false
     var angl:Double = 0.0
+    var filtersSeted = false
+
+    val dialog = DialogForFilters()
 
     var toOriginal:Boolean = true
 
@@ -82,15 +70,22 @@ class SecondActivity : AppCompatActivity() {
             getGalleryBitmap()
         }
 
-        fragments()
+        filtersUsage()
     }
 
-    private fun fragments(){
+    private fun filtersUsage(){
         bot_nav.setOnNavigationItemSelectedListener {item ->
 
             when (item.itemId) {
                 R.id.effects -> {
-
+                    if (filtersSeted) {
+                        dialog.show(supportFragmentManager, "myDialog")
+                    }
+                    else{
+                        dialog.setStartValues(needColCor, needGW, needInv, needPerRef, needBlur)
+                        dialog.show(supportFragmentManager, "myDialog")
+                        filtersSeted = true
+                    }
                     true
                 }
 
@@ -100,14 +95,7 @@ class SecondActivity : AppCompatActivity() {
                 }
 
                 R.id.scale -> {
-                    if (needScale){
-                        needScale = false
-                    }
-                    else
-                    {
-                        needScale = true
-                        dialogForScale()
-                    }
+                    dialogForScale()
                     true
                 }
                 else -> false
@@ -133,24 +121,30 @@ class SecondActivity : AppCompatActivity() {
 
     private fun getCameraBitmap(){
         filterReset()
+        if (checkPerm(Manifest.permission.CAMERA, MainActivity.CAMERA_RQ)) {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            photoFile = getPhotoFile(FILE_NAME)
+            val fileProvider =
+                FileProvider.getUriForFile(this, "edu.stanford.rkpandey.fileprovider", photoFile)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
+            intent.putExtra(MainActivity.imgSourseKey, MainActivity.CAMERA_SOURCE)
 
-        photoFile = getPhotoFile(FILE_NAME)
-        val fileProvider = FileProvider.getUriForFile(this, "edu.stanford.rkpandey.fileprovider", photoFile)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
-
-        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+            startActivityForResult(intent, CAMERA_REQUEST_CODE)
+        }
     }
 
     private fun getGalleryBitmap(){
         filterReset()
 
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
+        if (checkPerm(Manifest.permission.READ_EXTERNAL_STORAGE, MainActivity.STORAGE_RQ)) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            intent.putExtra(MainActivity.imgSourseKey, MainActivity.STORAGE_SOURSE)
 
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, GALLERY_REQUEST_CODE)
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivityForResult(intent, GALLERY_REQUEST_CODE)
+            }
         }
 
     }
@@ -167,13 +161,12 @@ class SecondActivity : AppCompatActivity() {
         needGW = false
         needInv = false
         needPerRef = false
-        needStaticColCor = false
         needBlur = false
         blurKoef = 1
         needScale = false
         scaleKoef = 1.0
         needRotate = false
-        angl = 0.1
+        angl = 0.0
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
@@ -247,7 +240,7 @@ class SecondActivity : AppCompatActivity() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
         builder.setPositiveButton("Добавить угол к текущему", DialogInterface.OnClickListener { dialog, _ -> dialogForRotatePlus(); dialog.cancel()})
-        builder.setNegativeButton("Задать угол", DialogInterface.OnClickListener { dialog, _ -> ; dialog.cancel() })
+        builder.setNegativeButton("Задать угол", DialogInterface.OnClickListener { dialog, _ -> dialogForRotateSet(); dialog.cancel() })
 
         builder.show()
     }
@@ -260,12 +253,11 @@ class SecondActivity : AppCompatActivity() {
         val input = EditText(this)
 
         input.inputType = InputType.TYPE_CLASS_TEXT
-        input.setText(scaleKoef.toString())
         builder.setView(input)
 
         builder.setNegativeButton("Добавить", DialogInterface.OnClickListener { dialog, _ -> m_Text = input.text.toString()
             val koef = m_Text.replace (',', '.')
-            val regex = "[0-9]+[.]?[0-9]*".toRegex()
+            val regex = "[+-]?[0-9]+[.]?[0-9]*".toRegex()
 
             if (regex.matches(koef)) {
                 angl += koef.toDouble()
@@ -279,6 +271,32 @@ class SecondActivity : AppCompatActivity() {
         builder.show()
     }
 
+    private fun dialogForRotateSet(){
+        var m_Text = ""
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Текущий угол поворота: $angl")
+
+        val input = EditText(this)
+
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        input.setText(angl.toString())
+        builder.setView(input)
+
+        builder.setNegativeButton("Установить", DialogInterface.OnClickListener { dialog, _ -> m_Text = input.text.toString()
+            val koef = m_Text.replace (',', '.')
+            val regex = "[+-]?[0-9]+[.]?[0-9]*".toRegex()
+
+            if (regex.matches(koef)) {
+                angl = koef.toDouble()
+                dialog.cancel()
+            }
+            else {
+                Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_LONG).show()
+                dialogForRotateSet()
+            } })
+
+        builder.show()
+    }
 
     private fun buttonTap() {
         button.setOnClickListener {
@@ -307,6 +325,15 @@ class SecondActivity : AppCompatActivity() {
 
     private fun render () {
         needRotate = angl != 0.0
+        needScale = scaleKoef != 1.0
+
+        val returned = dialog.returnValues()
+
+        needColCor = returned[0]
+        needGW = returned[1]
+        needInv = returned[2]
+        needPerRef = returned[3]
+        needBlur = returned[4]
 
         if (toOriginal){
             renderedImage = takenImage
@@ -322,10 +349,6 @@ class SecondActivity : AppCompatActivity() {
         if (needPerRef){
             renderedImage = FiltrPerRef().PerfectReflector(renderedImage)
             Toast.makeText(this, "PerfectReflection completed", Toast.LENGTH_SHORT).show()
-        }
-        if (needStaticColCor){
-            //renderedImage = StaticColorCorrection().corr(source, renderedImage)
-            Toast.makeText(this, "StaticColorCorrection completed", Toast.LENGTH_SHORT).show()
         }
         if (needGW){
             renderedImage = FilterGW().GrayWorld(renderedImage)
@@ -350,9 +373,4 @@ class SecondActivity : AppCompatActivity() {
 
         imageView2.setImageBitmap(renderedImage)
     }
-
-
-
-
-
 }

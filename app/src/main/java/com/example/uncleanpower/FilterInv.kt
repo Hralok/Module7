@@ -14,7 +14,6 @@ class FilterInv{
             0, 0, -1, 0, 255,
             0, 0, 0, 1, 0)
 
-
     fun transform(originalBitmap: Bitmap?): Bitmap? {
         var bitmap = originalBitmap?.copy( Bitmap.Config.ARGB_8888 , true)
         bitmap?.apply {
@@ -39,8 +38,4 @@ class FilterInv{
         }
         return bitmap
     }
-
-
-
-
 }

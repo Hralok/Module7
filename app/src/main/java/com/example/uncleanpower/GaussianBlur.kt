@@ -19,14 +19,9 @@ class GaussianBlur {
         val rad = 5
         val mat = kernel(sigma, rad)
 
-        println(sigma)
-
         bitmap?.apply {
             val hei = height
             val wi = width
-
-            println(height)
-            println(width)
 
             val pixels = IntArray(hei * wi)
             getPixels(pixels, 0, wi, 0, 0, wi, hei)
@@ -36,7 +31,6 @@ class GaussianBlur {
 
             otv = Bitmap.createBitmap(n, wi, hei, Bitmap.Config.ARGB_8888)
         }
-
         return otv
     }
 
