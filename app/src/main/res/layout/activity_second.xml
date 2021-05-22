@@ -11,12 +11,12 @@
         android:id="@+id/imageView2"
         android:layout_width="412dp"
         android:layout_height="613dp"
+        android:layout_above="@+id/bot_nav"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="25dp"
-        android:layout_marginBottom="93dp"
+        android:layout_marginBottom="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/all_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -27,24 +27,28 @@
         tools:visibility="visible" />
 
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bot_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="?android:attr/windowBackground"
+        app:itemBackground="@color/purple_500"
+        app:itemIconTint="#fff"
+        app:itemTextColor="#fff"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/nav_menu" />
+
     <FrameLayout
         android:id="@+id/all_nav"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bot_nav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="?android:attr/windowBackground"
-            app:itemBackground="@color/purple_500"
-            app:itemIconTint="#fff"
-            app:itemTextColor="#fff"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/nav_menu" />
-
-    </FrameLayout>
+        android:layout_height="match_parent"/>
 
     <Button
         android:id="@+id/button"

@@ -60,17 +60,9 @@ class SecondActivity : AppCompatActivity() {
     var needScale:Boolean = false
     var scaleKoef:Double = 1.0
     var needRotate:Boolean = false
-    var angl:Double = 0.1
+    var angl:Double = 0.0
 
     var toOriginal:Boolean = true
-
-    val filtersfrag = FiltersFragment()
-    val crrotfrag = CropRotateFragment()
-    val drawfrag = DrawFragment()
-
-    val gwfil = GrayWorldFragment()
-    val ccfil = ColorCorrectionFragment()
-    val invfil = InversionFragment()
 
     private lateinit var photoFile: File
     private var takenImage: Bitmap? = null
@@ -90,34 +82,36 @@ class SecondActivity : AppCompatActivity() {
             getGalleryBitmap()
         }
 
+        fragments()
+    }
+
+    private fun fragments(){
         bot_nav.setOnNavigationItemSelectedListener {item ->
-            val trans =  supportFragmentManager.beginTransaction()
+
             when (item.itemId) {
                 R.id.effects -> {
-                    trans
-                        .replace(R.id.all_nav, FiltersFragment.newInstance(), FiltersFragment.TAG)
-                        .commit()
 
                     true
                 }
 
                 R.id.crop_rotate -> {
-                    trans
-                        .replace(R.id.all_nav, CropRotateFragment.newInstance(), CropRotateFragment.TAG)
-                        .commit()
+                    dialogForRotate()
                     true
                 }
 
                 R.id.scale -> {
-                    trans
-                            .replace(R.id.all_nav, ScaleFragment.newInstance(), ScaleFragment.TAG)
-                            .commit()
-                            dialogForScale()
+                    if (needScale){
+                        needScale = false
+                    }
+                    else
+                    {
+                        needScale = true
+                        dialogForScale()
+                    }
                     true
                 }
                 else -> false
             }
-
         }
     }
 
@@ -149,7 +143,6 @@ class SecondActivity : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
-
     private fun getGalleryBitmap(){
         filterReset()
 
@@ -179,8 +172,8 @@ class SecondActivity : AppCompatActivity() {
         blurKoef = 1
         needScale = false
         scaleKoef = 1.0
-        needRotate = true
-        angl = 90.1
+        needRotate = false
+        angl = 0.1
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
@@ -208,19 +201,28 @@ class SecondActivity : AppCompatActivity() {
         val input = EditText(this)
 
         input.inputType = InputType.TYPE_CLASS_TEXT
+        input.setText(scaleKoef.toString())
         builder.setView(input)
 
         builder.setPositiveButton("Oк", DialogInterface.OnClickListener {
-            dialog, which -> m_Text = input.text.toString()
-            scaled(m_Text)
+            dialog, _ -> m_Text = input.text.toString()
+            val koef = m_Text.replace (',', '.')
+            val regex = "[0-9]+[.]?[0-9]*".toRegex()
+
+            if (regex.matches(koef)) {
+                scaleKoef = koef.toDouble()
+                dialog.cancel()
+            }
+            else {
+                Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_LONG).show()
+                dialogForScale ()
+            }
         })
-        builder.setNegativeButton("Отмена", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
 
         builder.show()
     }
 
     private fun dialogForNewImage () {
-        var m_Text = ""
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Выберите источник изображения")
 
@@ -231,7 +233,6 @@ class SecondActivity : AppCompatActivity() {
     }
 
     private fun dialogForSize () {
-        var m_Text = ""
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Вы хоите применить изменения к оригинальному изображению или к его уменьшенной версии? " +
                 "Применение к уменьшенной версии позволит выполнить алгоритмы быстрее!")
@@ -242,19 +243,42 @@ class SecondActivity : AppCompatActivity() {
         builder.show()
     }
 
-     fun scaled (k: String) {
-         val koef = k.replace (',', '.')
-         val regex = "[0-9]+[.]?[0-9]*".toRegex()
-         if (regex.matches(koef)) {
-             val what = koef.toDouble()
-             val negImg = Scale().sscale(what, takenImage)
-             imageView2.setImageBitmap(negImg)
-             //null
-         } else {
-             Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_SHORT).show()
-         }
+    private fun dialogForRotate(){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
+        builder.setPositiveButton("Добавить угол к текущему", DialogInterface.OnClickListener { dialog, _ -> dialogForRotatePlus(); dialog.cancel()})
+        builder.setNegativeButton("Задать угол", DialogInterface.OnClickListener { dialog, _ -> ; dialog.cancel() })
+
+        builder.show()
     }
+
+    private fun dialogForRotatePlus() {
+        var m_Text = ""
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Текущий угол поворота: $angl")
+
+        val input = EditText(this)
+
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        input.setText(scaleKoef.toString())
+        builder.setView(input)
+
+        builder.setNegativeButton("Добавить", DialogInterface.OnClickListener { dialog, _ -> m_Text = input.text.toString()
+            val koef = m_Text.replace (',', '.')
+            val regex = "[0-9]+[.]?[0-9]*".toRegex()
+
+            if (regex.matches(koef)) {
+                angl += koef.toDouble()
+                dialog.cancel()
+            }
+            else {
+                Toast.makeText(this, "Упс! Вы ввели что-то не то! Попробуйте снова.", Toast.LENGTH_LONG).show()
+                dialogForRotatePlus()
+            } })
+
+        builder.show()
+    }
+
 
     private fun buttonTap() {
         button.setOnClickListener {
@@ -281,9 +305,9 @@ class SecondActivity : AppCompatActivity() {
         return corrected
     }
 
-
-
     private fun render () {
+        needRotate = angl != 0.0
+
         if (toOriginal){
             renderedImage = takenImage
         }
